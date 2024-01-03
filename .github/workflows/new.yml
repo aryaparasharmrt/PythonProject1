@@ -28,7 +28,7 @@ jobs:
       if: failure()
       run: |
         curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-        --data-urlencode "To=YOUR_PHONE_NUMBER" \
+        --data-urlencode "To=7017800948" \
         --data-urlencode "From=$TWILIO_PHONE_NUMBER" \
         --data-urlencode "Body=The GitHub Actions workflow failed. Check the logs for details." \
         -u $TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN
