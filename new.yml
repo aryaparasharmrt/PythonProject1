@@ -1,0 +1,38 @@
+name: CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm test
+
+    - name: Notify on failure
+      if: failure()
+      run: |
+        curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
+        --data-urlencode "To=YOUR_PHONE_NUMBER" \
+        --data-urlencode "From=$TWILIO_PHONE_NUMBER" \
+        --data-urlencode "Body=The GitHub Actions workflow failed. Check the logs for details." \
+        -u $TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN
+      env:
+        TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+        TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+        TWILIO_PHONE_NUMBER: ${{ secrets.TWILIO_PHONE_NUMBER }}
